@@ -224,3 +224,181 @@ interactBox.addEventListener("click", () => {
     doorVideo.currentTime = 0;
     doorVideo.play().catch(() => {});
 });
+
+const horrorPath =document.getElementById("horrorPath");
+const horrorWorld = document.getElementById("horrorWorld");
+const pathControls= document.getElementById("pathControls");
+
+const ghosts =[...document.querySelectorAll(".ghost")].map(ghost => {
+    return {
+        element:ghost,
+        image:ghost.querySelector("img"),
+        audio:ghost.querySelector("audio"),
+        position:Number (ghost.dataset.position)
+    };
+});
+let pathPosition=0;
+let pathDirection =0;
+let pathWalking=false;
+let pathAnimationFrame=null;
+let pathWalkTime=0;
+let pathLastStep=0;
+
+const pathStep1=new Audio("assests/sounds/step1.mp3");
+const pathStep2=new Audio("assests/sounds/step2.mp3");
+
+let pathStepNumber = 0;
+
+function startHorrorPath() {
+    doorVideo.style.display = "none"
+    horrorPath.style.display="block";
+    
+    pathPosition=0;
+    pathDirection=0;
+    pathWalking=false;
+    pathWalkTime=0;
+    
+    updateHorrorPath();
+
+    setTimeout(()=> {
+        pathControls.style.opacity ="0";
+    },5000);
+}
+function updateHorrorPath(){
+    const bobY=pathWalking
+    ? Math.sin(pathWalkTime * 2)* 6
+    : 0;
+
+    const bobX = pathWalking
+    ?Math.sin(pathWalkTime) *3
+    : 0;
+
+    const tilt = pathWalking
+    ? Math.sin(pathWalkTime)*0.8
+    : 0;
+
+horrorWorld.style.transform=`translate(${bobX}px) rotate(${tilt}deg)`;
+
+ghosts.forEach(ghost => {
+    const distance = Math.abs(pathPosition - ghost.position);
+    const visibilityRange = 180;
+    const audioRange =300;
+
+    let opacity = 0;
+
+    if (distance < visibilityRange) {
+        opacity =1 - distance / visibilityRange;
+    }
+    ghost.element.style.opacity=opacity;
+    const scale=0.7 + Math.max(
+        0,
+        1- distance / visibilityRange)*0.3;
+        ghost.element.style.transform =
+        `translateY(-50%) scale(${scale})`;
+        let volume=0;
+        if (distance < audioRange) {
+            volume=1 -distance / audioRange;
+        }
+        volume = Math.max(0,Math.min(1,volume));
+        ghost.audio.volume = volume *0.9;
+
+        if(volume > 0.01) {
+            if (ghost.audio.paused) {
+                ghost.audio.currentTime=0;
+                ghost.audio.play().catch(()=>{});
+            }
+        } else {
+            if (!ghost.audio.paused){
+                ghost.audio.pause();
+                ghost.audio.currentTime =0;
+            }
+        }
+});
+}
+function startPathWalking(){
+    if (pathWalking)return;
+    pathWalking =true;
+    pathWalkTime=0;
+    pathLastStep=0;
+    
+    function walk() {
+        if (!pathWalking) {
+            pathAnimationFrame =null;
+            updateHorrorPath();
+            return;
+        }
+        if (pathDirection === 1){
+            pathPosition += 2;
+        }
+        if(pathDirection === -1){
+            pathPosition -= 2;
+        }
+        pathPosition = Math.max(0,Math.min(2100,pathPosition));
+        pathWalkTime += 0.18;
+        updateHorrorPath();
+        const now = performance.now();
+        if (now - pathLastStep > 420) {
+            playPathStep();
+            pathLastStep=now;
+        }
+        pathAnimationFrame=requestAnimationFrame(walk);
+    }
+    pathAnimationFrame = requestAnimationFrame(walk);
+}
+function stopPathWalking(){
+    pathWalking = false;
+
+    if (pathAnimationFrame) {
+        cancelAnimationFrame(pathAnimationFrame);
+        pathAnimationFrame = null;
+    }
+    updateHorrorPath();
+}
+function playPathStep() {
+    if (pathStepNumber === 0) {
+        pathStep1.currentTime = 0;
+        pathStep1.play().catch(()=> {});
+        pathStepNumber =1;
+    } else {
+        pathStep2.currentTime=0;
+        pathStep2.play().catch(()=> {});
+        pathStepNumber=0;
+    }
+}
+document.addEventListener("keydown",event =>{
+    if (horrorPath.style.display !== "block")return;
+    if (
+        event.key ==="w" ||
+        event.key === "W" ||
+        event.key === "ArrowUp"
+    ){
+        event.preventDefault();
+        pathDirection=1;
+        startPathWalking();
+    }
+    if (
+        event.key === "s" ||
+        event.key === "S" ||
+        event.key === "ArrowDown"
+    ){
+        event.preventDefault();
+        pathDirection =-1;
+        startPathWalking();
+    }
+});
+document.addEventListener("keyup", event => {
+    if (
+        event.key === "w" ||
+        event.key === "W" ||
+        event.key === "ArrowUp" ||
+        event.key === "s" ||
+        event.key === "S" ||
+        event.key === "ArrowDown"
+    ){
+        pathDirection=0;
+        stopPathWalking();
+    }
+});
+doorVideo.addEventListener("ended", ()=>{
+    startHorrorPath();
+});
