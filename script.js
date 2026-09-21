@@ -4,110 +4,223 @@ const yesBtn = document.getElementById("yesBtn");
 const noBtn = document.getElementById("noBtn");
 const message = document.getElementById("message");
 
-const doorScene=document.getElementById("doorScene");
-const doorImage=document.getElementById("doorImage");
-const interactBox=document.getElementById("interactBox");
-const controlsHint=document.getElementById("controlsHint");
-const doorVideo=document.getElementById("doorVideo");
-const doorAudio=document.getElementById("doorAudio");
+const doorScene = document.getElementById("doorScene");
+const doorImage = document.getElementById("doorImage");
+const interactBox = document.getElementById("interactBox");
+const controlsHint = document.getElementById("controlsHint");
+const doorVideo = document.getElementById("doorVideo");
+const doorAudio = document.getElementById("doorAudio");
 
 const step1 = new Audio("assests/sounds/step1.mp3");
 const step2 = new Audio("assests/sounds/step2.mp3");
 
-let playerPosition=0;
-let turn =0;
-let walking= false;
-let stepNumber=0;
+let playerPosition = 0;
+let turn = 0;
 
-function playClick(){
-    clickAudio.currentTime =0;
-    clickAudio.play();
+let moveDirection = 0;
+let walking = false;
+let walkTime = 0;
+let animationFrame = null;
+
+let stepNumber = 0;
+let lastStepTime = 0;
+
+function playClick() {
+    clickAudio.currentTime = 0;
+    clickAudio.play().catch(() => {});
 }
 
-yesBtn.addEventListener("click", () =>{
+yesBtn.addEventListener("click", () => {
     playClick();
-    bgMusic.volume=0.4;
-    bgMusic.play();
-    doorScene.style.display="block";
 
-    setTimeout(()=> {
-        controlsHint.style.opacity="0";
-    },5000);
+    bgMusic.volume = 0.4;
+    bgMusic.play().catch(() => {});
+
+    doorScene.style.display = "block";
+
+    playerPosition = 0;
+    turn = 0;
+
+    updateDoor();
+
+    setTimeout(() => {
+        controlsHint.style.opacity = "0";
+    }, 5000);
 });
 
-noBtn.addEventListener("click",()=> {
+noBtn.addEventListener("click", () => {
     playClick();
-    message.textContent="Put your headphones on first";
+    message.textContent = "Put your headphones on first";
 });
 
-document.addEventListener("keydown",(event)=>{
-    if (doorScene.style.display !== "block")return;
-    if (event.key ==="w" || event.key==="ArrowUp"){
-        moveForward();
+document.addEventListener("keydown", (event) => {
+    if (doorScene.style.display !== "block") return;
+
+    if (
+        event.key === "w" ||
+        event.key === "W" ||
+        event.key === "ArrowUp"
+    ) {
+        event.preventDefault();
+        moveDirection = 1;
+        startWalking();
     }
-    if (event.key==="s" || event.key==="ArrowDown"){
-        moveBackward();
+
+    if (
+        event.key === "s" ||
+        event.key === "S" ||
+        event.key === "ArrowDown"
+    ) {
+        event.preventDefault();
+        moveDirection = -1;
+        startWalking();
     }
-    if (event.key ==="a" || event.key ==="ArrowLeft"){
+
+    if (
+        event.key === "a" ||
+        event.key === "A" ||
+        event.key === "ArrowLeft"
+    ) {
+        event.preventDefault();
         turn -= 5;
         updateDoor();
     }
-    if (event.key==="d" || event.key ==="ArrowRight"){
+
+    if (
+        event.key === "d" ||
+        event.key === "D" ||
+        event.key === "ArrowRight"
+    ) {
+        event.preventDefault();
         turn += 5;
         updateDoor();
     }
-})
-function moveForward() {
-playerPosition += 5;
-if (playerPosition > 100) {
-    playerPosition = 100;
-}
-playStep();
-updateDoor();
-}
-function moveBackward(){
-    playerPosition -=5;
-    if (playerPosition < 0) {
-        playerPosition = 0;
+});
+
+document.addEventListener("keyup", (event) => {
+    if (
+        event.key === "w" ||
+        event.key === "W" ||
+        event.key === "ArrowUp" ||
+        event.key === "s" ||
+        event.key === "S" ||
+        event.key === "ArrowDown"
+    ) {
+        moveDirection = 0;
+        stopWalking();
     }
-    playStep();
+});
+
+function startWalking() {
+    if (walking) return;
+
+    walking = true;
+    walkTime = 0;
+    lastStepTime = 0;
+
+    function walk() {
+        if (!walking) {
+            animationFrame = null;
+
+            doorImage.dataset.bobY = 0;
+            doorImage.dataset.bobX = 0;
+            doorImage.dataset.tilt = 0;
+
+            updateDoor();
+            return;
+        }
+
+        if (moveDirection === 1) {
+            playerPosition += 0.35;
+        }
+
+        if (moveDirection === -1) {
+            playerPosition -= 0.35;
+        }
+
+        playerPosition = Math.max(0, Math.min(100, playerPosition));
+
+        walkTime += 0.18;
+
+        const bobY = Math.sin(walkTime * 2) * 7;
+        const bobX = Math.sin(walkTime) * 3;
+        const tilt = Math.sin(walkTime) * 1.2;
+
+        doorImage.dataset.bobY = bobY;
+        doorImage.dataset.bobX = bobX;
+        doorImage.dataset.tilt = tilt;
+
+        updateDoor();
+
+        const now = performance.now();
+
+        if (now - lastStepTime > 420) {
+            playStep();
+            lastStepTime = now;
+        }
+
+        animationFrame = requestAnimationFrame(walk);
+    }
+
+    animationFrame = requestAnimationFrame(walk);
+}
+
+function stopWalking() {
+    walking = false;
+
+    if (animationFrame) {
+        cancelAnimationFrame(animationFrame);
+        animationFrame = null;
+    }
+
+    doorImage.dataset.bobY = 0;
+    doorImage.dataset.bobX = 0;
+    doorImage.dataset.tilt = 0;
+
     updateDoor();
 }
-function updateDoor(){
-    const scale = 1 + playerPosition / 12;
+
+function updateDoor() {
+    const scale = 0.35 + (playerPosition / 100) * 1.65;
+
     const horizontalMove = turn * 2;
-    doorImage.style.transform = `translate(calc(-50% + ${horizontalMove}px),-50%)scale(${scale})`;
+
+    const bobY = parseFloat(doorImage.dataset.bobY || 0);
+    const bobX = parseFloat(doorImage.dataset.bobX || 0);
+    const tilt = parseFloat(doorImage.dataset.tilt || 0);
+
+    doorImage.style.transform =
+        `translate(calc(-50% + ${horizontalMove + bobX}px), calc(-50% + ${bobY}px)) rotate(${tilt}deg) scale(${scale})`;
 
     if (playerPosition >= 85) {
         interactBox.style.display = "block";
-    }else {
-        interactBox.style.display="none";
+    } else {
+        interactBox.style.display = "none";
     }
 }
+
 function playStep() {
-    if (walking) return;
-    walking = true;
     if (stepNumber === 0) {
         step1.currentTime = 0;
-        step1.play();
+        step1.play().catch(() => {});
         stepNumber = 1;
     } else {
         step2.currentTime = 0;
-        step2.play();
+        step2.play().catch(() => {});
         stepNumber = 0;
     }
-    setTimeout(() => {
-        walking = false;
-    }, 250);
 }
-interactBox.addEventListener("click", () =>{
-    doorImage.style.display="none";
-    interactBox.style.display="none";
+
+interactBox.addEventListener("click", () => {
+    stopWalking();
+
+    doorImage.style.display = "none";
+    interactBox.style.display = "none";
 
     doorAudio.currentTime = 0;
-    doorAudio.play();
+    doorAudio.play().catch(() => {});
 
-    doorVideo.style.display="block";
-    doorVideo.currentTime=0;
-    doorVideo.play();
+    doorVideo.style.display = "block";
+    doorVideo.currentTime = 0;
+    doorVideo.play().catch(() => {});
 });

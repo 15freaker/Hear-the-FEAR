@@ -116,12 +116,13 @@ button:hover{
     position:absolute;
     left: 50%;
     top: 50%;
-    width: 180%;
+    width: 10%;
     height:auto;
-    transform: translate(-50%, -50%);
-    transform-origin: none;
+    transform: translate(-50%, -50%)scale (0.35);
+    transform-origin: center;
     user-select:none;
     pointer-events:none;
+    will-change:transform;
 }
 #interactBox {
     position: absolute;
@@ -159,6 +160,7 @@ button:hover{
     inset:0;
     width:100%;
     height:100%;
-    object-fit:cover;
+    object-fit:contain;
     display:none;
+    background:black;
 }
