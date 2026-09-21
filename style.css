@@ -1,0 +1,99 @@
+* {
+    margin:0;
+    padding:0;
+    box-sizing: border-box;
+}
+body{
+    min-height:100vh;
+    background:black;
+    color: white;
+    font-family: Arial, sans-serif;
+    overflow: hidden;
+    position:relative;
+}
+main {
+    position: relative;
+    z-index:2;
+    min-height: 100vh;
+    display:flex;
+    flex-direction: column;
+    align-items:center;
+    justify-content: center;
+    text-align:center;
+}
+h1 {
+    font-size: clamp(50px, 8vw,110px);
+    font-weight:300;
+    letter-spacing:8px;
+    text-transform:uppercase;
+}
+h1 span {
+    font-weight: 900;
+}
+.headphone-text {
+    margin-top:25px;
+    font-size: 18px;
+    letter-spacing:3px;
+    color:#aaa;
+    text-transform: uppercase;
+}
+.question {
+    margin-top:55px;
+    font-size:20px;
+    letter-spacing:2px;
+}
+.buttons {
+    display:flex;
+    gap:20px;
+    margin-top:25px;
+}
+button {
+    width:110px;
+    padding:13px 0;
+    border:1px solid #555;
+    background: #080808;
+    color:white;
+    font-size:14px;
+    letter-spacing:3px;
+    cursor:pointer;
+    transition:0.25s;
+}
+button:hover{
+    background: white;
+    color: black;
+}
+#message{
+    margin-top:25px;
+    min-height:22px;
+    color:#aaa;
+    font-size:15px;
+    letter-spacing:1px;
+}
+.container {
+    position:absolute;
+    width:180px;
+    height:230px;
+    background:#030303;
+    border:1px solid #111;
+    z-index: 1;
+}
+.image-one {
+    left: 7%;
+    top:18%;
+    transform: rotate(-7deg);
+}
+.image-two {
+    right:8%;
+    top:12%;
+    transform:rotate(8deg);
+}
+.image-three {
+    right:12%;
+    bottom:8%;
+    transform:rotate(-5deg);
+}
+.container img {
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
