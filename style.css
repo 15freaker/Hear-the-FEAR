@@ -219,3 +219,14 @@ button:hover{
     pointer-events:none;
     z-index:10;
 }
+#jumpScaresImage {
+    position:fixed;
+    inset:0;
+    width:100%;
+    height:100%;
+    object-fit:contain;
+    background:black;
+    z-index:99999;
+    display:none;
+    pointer-events:none;
+}

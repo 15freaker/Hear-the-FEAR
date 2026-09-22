@@ -14,6 +14,16 @@ const doorAudio = document.getElementById("doorAudio");
 const step1 = new Audio("assests/sounds/step1.mp3");
 const step2 = new Audio("assests/sounds/step2.mp3");
 
+const jumpScareAudio = new Audio ("assests/sounds/jump.mp3");
+const jumpScareImage = document.createElement("img");
+
+jumpScareImage.src = "assests/jump.png";
+jumpScareImage.id = "jumpScareImage";
+
+document.body.appendChild(jumpScareImage);
+let jumpScareActive = false;
+let nextJumpScare = null;
+
 let playerPosition = 0;
 let turn = 0;
 
@@ -259,11 +269,41 @@ function startHorrorPath() {
     pathWalkTime=0;
     
     updateHorrorPath();
+    scheduleJumpScare();
 
     setTimeout(()=> {
         pathControls.style.opacity ="0";
     },5000);
 }
+function triggerJumpScare(){
+    if (jumpScareActive)return;
+    jumpScareActive = true;
+    jumpScareImage.style.display = "block";
+    jumpScareAudio.currentTime=0;
+    jumpScareAudio.volume=1;
+    jumpScareAudio.play().catch(()=>{});
+
+    setTimeout(()=>{
+        jumpScareImage.style.display = "none";
+        jumpScareActive = false;
+        scheduleJumpScare();
+    },1200);
+
+}
+function scheduleJumpScare() {
+    const delay = 15000 + Math.random() * 30000;
+
+    nextJumpScare = setTimeout(()=>{
+        if (horrorPath.style.display === "block"){
+            triggerJumpScare();
+        } else {
+            scheduleJumpScare();
+        }
+    }, delay);
+}
+
+
+
 function updateHorrorPath(){
     const bobY=pathWalking
     ? Math.sin(pathWalkTime * 2)* 6
