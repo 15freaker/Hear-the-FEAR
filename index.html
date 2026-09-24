@@ -12,16 +12,13 @@
     <div class="container image-one">
         <img src="assests/simg1.jpg">
     </div>
-
     <div class="container image-two">
         <img src="assests/simg2.jpg">
     </div>
-
     <div class="container image-three">
         <img src="assests/simg3.jpg">
     </div>
-    
-    <main>
+    <main id="startScreen">
         <h1>Hear the <span>FEAR</span></h1>
         <p class="headphone-text">
             Use headphones to experience the fear
@@ -35,6 +32,7 @@
         </div>
         <p id="message"></p>
     </main>
+
     <div id="doorScene">
         <img id="doorImage" src="assests/doorimg.png">
         <div id="interactBox">
@@ -49,53 +47,29 @@
         <video id="doorVideo" src="assests/starting-door.mp4"></video>
         <audio id="doorAudio" src="assests/sounds/dooraudio.mp3"></audio>
     </div>
-<div id="horrorPath">
-    <div id="horrorWorld">
-        <div class="ghost ghost-left" data-position="100">
-            <img src="assests/img1.jpg">
-            <audio src="assests/sounds/1.mp3" loop></audio>
+    <div id="strangerScene">
+        <div id="strangerWorld">
+            <div id="stranger">
+                <div id="strangerHead"></div>
+                <div id="strangerBody"></div>
+            </div>
         </div>
-        <div class="ghost ghost-right" date-position="300">
-            <img src="assests/img2.jpg">
-            <audio src="assests/sounds/2.mp3" loop></audio>
+        <div id="dialogueBox">
+            <div id="speakerName">
+                STRANGER
+            </div>
+            <div id="dialogueText">
+            </div>
+            <div id="choiceContainer">
+                <button class="dialogueChoice" id="choice1"></button>
+                <button class="dialogueChoice" id="choice2"></button>
+            </div>
         </div>
-
-        <div class="ghost ghost-left" data-position="500">
-            <img src="assests/img3.jpg">
-            <audio src="assests/sounds/3.mp3" loop></audio>
-        </div>
-        <div class="ghost ghost-right" data-position="700">
-            <img src="assests/img4.jpg">
-            <audio src="assests/sounds/4.mp3" loop>
-            </audio>
-        </div>
-        <div class="ghost ghost-left" data-position="900">
-            <img src="assests/img5.jpg">
-            <audio src="assests/sounds/5.mp3"loop></audio>
-        </div>
-        <div class="ghost ghost-right" data-position="1100">
-            <img src="assests/img6.jpg">
-            <audio src="assests/sounds/6.mp3" loop></audio>
-        </div>
-        <div class="ghost ghost-left" data-position="1500">
-            <img src="assests/img7.jpg">
-            <audio src="assests/aounds/8.mp3"loop></audio>
-        </div>
-        <div class="ghost ghost-right" data-position="1700">
-            <img src="assests/img8.jpg">
-            <audio src="assests/sounds/9.mp3" loop></audio>
-        </div>
-        <div class="ghost ghost-left" data-position="1900">
-            <img src="assests/img9.jpg">
-            <audio src="assests/sounds/10.mp3" loop></audio>
-        </div>
+        <audio id="talkAudio" src="assests/sounds/talk.mp3"></audio>
+        <audio id="dialogueClickAudio" src="assests/sounds/click-audio.mp3"></audio>
+        <audio id="strangerStep1" src="assests/sounds/step1.mp3"></audio>
+        <audio id="strangerStep2" src="assests/sounds/step2.mp3"></audio>
     </div>
-    <div id="pathControls">
-           W / ↑ — Move Forward<br>
-           S / ↓ — Move Back
-    </div>
-    </div>
-</div>
     <script src="script.js"></script>
-    </body>
-    </html>
+</body>
+</html>
