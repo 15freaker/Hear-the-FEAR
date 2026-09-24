@@ -165,7 +165,7 @@ button:hover{
     background:black;
 }
 
-#strangeScene {
+#strangerScene {
     position:fixed;
     inset:0;
     background:black;
@@ -385,4 +385,77 @@ button:hover{
     z-index:99999;
     display:none;
     pointer-events:none;
+}
+#pathwayScene {
+    position:fixed;
+    inset:0;
+    background:#000;
+    z-index:1100;
+    display:none;
+    overflow:hidden;
+}
+
+#pathwayWorld {
+    position:absolute;
+    inset:0;
+    background:linear-gradient(90deg,#000 0%,#030303 25%,#080808 50%,#030303 75%,#000 100%);
+    perspective:900px;
+    overflow:hidden;
+}
+
+.pathImage {
+    position:absolute;
+    top:50%;
+    width:230px;
+    height:300px;
+    transform:translateY(-50%);
+    opacity:0;
+    transition:opacity 0.25s,transform 0.25s;
+    filter:brightness(0.25);
+}
+
+.pathImage.left {
+    left:7%;
+}
+
+.pathImage.right {
+    right:7%;
+}
+
+.pathImage img {
+    width:100%;
+    height:100%;
+    object-fit:contain;
+    display:block;
+}
+
+#pathwayControls {
+    position:absolute;
+    left:50%;
+    bottom:35px;
+    transform:translateX(-50%);
+    padding:12px 22px;
+    background:rgba(0,0,0,0.75);
+    color:#aaa;
+    font-size:13px;
+    line-height:1.7;
+    text-align:center;
+    letter-spacing:1px;
+    opacity:1;
+    transition:opacity 1s;
+    pointer-events:none;
+    z-index:10;
+}
+
+@media (max-width:600px) {
+    .pathImage {
+        width:140px;
+        height:200px;
+    }
+    .pathImage.left {
+        left:2%;
+    }
+    .pathImage.right {
+        right:2%;
+    }
 }
